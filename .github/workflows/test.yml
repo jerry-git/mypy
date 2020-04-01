@@ -47,4 +47,4 @@ jobs:
     - name: setup tox environment
       run: tox -e ${{ matrix.toxenv }} --notest
     - name: test
-      run: tox -e ${{ matrix.toxenv }} -- --splits 10 --group ${{ matrix.group }}
+      run: tox -e ${{ matrix.toxenv }} -- --splits 5 --group ${{ matrix.group }}
