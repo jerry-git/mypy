@@ -2,7 +2,7 @@ name: main
 
 on:
   push:
-    branches: [master]
+    branches: [use-pytest-split]
     tags: ['*']
   pull_request:
     paths-ignore:
@@ -21,6 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         name: [windows-py37-32, windows-py37-64]
+        group: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         include:
         - name: windows-py37-32
           python: '3.7'
@@ -46,4 +47,4 @@ jobs:
     - name: setup tox environment
       run: tox -e ${{ matrix.toxenv }} --notest
     - name: test
-      run: tox -e ${{ matrix.toxenv }}
+      run: tox -e ${{ matrix.toxenv }} --splits 10 --group ${{ matrix.group }}
