@@ -1,0 +1,41 @@
+name: update-test-durations
+
+on:
+  push:
+    branches: [update-test-durations]
+
+jobs:
+  update_test_durations:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        name: [windows, ubuntu, macos]
+        include:
+          - name: windows
+            os: windows-latest
+            test_durations_file: .test_durations_win
+          - name: ubuntu
+            os: ubuntu-latest
+            test_durations_file: .test_durations_ubuntu
+          - name: macos
+            os: macos-latest
+            test_durations_file: .test_durations_macos
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: initialize submodules
+        run: git submodule update --init
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: install tox
+        run: pip install --upgrade setuptools 'virtualenv<20' tox==3.9.0
+      - name: setup tox environment
+        run: tox -e py37 --notest
+      - name: run tests
+        run: tox -e py37 -- --store-durations --durations-path ${{ matrix.test_durations_file }} -n 1
+      - name: store durations file as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.test_durations_file }}
